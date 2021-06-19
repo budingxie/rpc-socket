@@ -1,7 +1,7 @@
 package com.py.remote;
 
 import com.py.protocol.InfProtocol;
-import com.py.refl.ReflSuport;
+import com.py.refl.ReflSupport;
 import com.py.support.ParamSupport;
 import com.py.util.JsonUtil;
 
@@ -40,7 +40,7 @@ public class RemoteInvokeHandler implements InvocationHandler {
 
         // 把java中基础类型转化
         Parameter[] parameters = method.getParameters();
-        String[] types = ReflSuport.typeTransform(parameters);
+        String[] types = ReflSupport.typeTransform(parameters);
         infProtocol.setTypes(types);
 
         // 参数转换

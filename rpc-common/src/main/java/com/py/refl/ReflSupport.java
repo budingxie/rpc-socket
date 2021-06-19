@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Map;
 
-public class ReflSuport {
+public class ReflSupport {
 
     public static Class<?> strToClazz(String classStr) {
         try {

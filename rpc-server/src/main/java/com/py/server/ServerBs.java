@@ -2,7 +2,7 @@ package com.py.server;
 
 import com.py.impl.UserServiceImpl;
 import com.py.protocol.InfProtocol;
-import com.py.refl.ReflSuport;
+import com.py.refl.ReflSupport;
 import com.py.util.JsonUtil;
 
 import java.io.DataInputStream;
@@ -46,17 +46,17 @@ public class ServerBs extends Thread {
 
                 // 根据协议对象，进行反射获取：对象，方法，参数类型，参数数据
                 Object respData = new Object();
-                Class<?> infClazz = ReflSuport.strToClazz(protocol.getInf());
+                Class<?> infClazz = ReflSupport.strToClazz(protocol.getInf());
                 // 获取服务
                 for (Class<?> implClazz : implClass) {
                     if (infClazz.isAssignableFrom(implClazz)) {
                         // 实例化
-                        Object infInstance = ReflSuport.clazzToObj(implClazz);
+                        Object infInstance = ReflSupport.clazzToObj(implClazz);
                         // 获取需要执行的方法
-                        Method method = ReflSuport.analyzeAndObtain(implClazz, protocol.getMethod(),
-                                ReflSuport.cusTypeToJavaType(protocol.getTypes()));
+                        Method method = ReflSupport.analyzeAndObtain(implClazz, protocol.getMethod(),
+                                ReflSupport.cusTypeToJavaType(protocol.getTypes()));
                         // 对参数进行解析
-                        Object[] paramsObj = ReflSuport.analyzeParams(method, protocol.getParams());
+                        Object[] paramsObj = ReflSupport.analyzeParams(method, protocol.getParams());
                         respData = method.invoke(infInstance, paramsObj);
                         break;
                     }
