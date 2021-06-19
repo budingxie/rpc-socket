@@ -1,20 +1,18 @@
 package com.py.server;
 
-import com.google.gson.Gson;
 import com.py.impl.UserServiceImpl;
 import com.py.protocol.InfProtocol;
-import com.py.suport.refl.ReflSuport;
+import com.py.refl.ReflSuport;
+import com.py.util.JsonUtil;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Map;
 
 public class ServerBs extends Thread {
 
@@ -33,7 +31,6 @@ public class ServerBs extends Thread {
         // 3.getOutPutStream()获取请求流，获取请求信息
         // 4.getOutPutStream()获取返回流，返回信息
         // 5.关闭连接
-        Gson gson = new Gson();
         while (true) {
             try {
                 System.out.println("等待远程连接，端口号为：" + serverSocket.getLocalPort() + "...");
@@ -45,7 +42,7 @@ public class ServerBs extends Thread {
                 String data = in.readUTF();
 
                 // 处理接口请求，协议对象InfProtocol
-                InfProtocol protocol = gson.fromJson(data, InfProtocol.class);
+                InfProtocol protocol = JsonUtil.jsonToObj(data, InfProtocol.class);
 
                 // 根据协议对象，进行反射获取：对象，方法，参数类型，参数数据
                 Object respData = new Object();
@@ -67,7 +64,7 @@ public class ServerBs extends Thread {
 
                 // 返回结果
                 DataOutputStream out = new DataOutputStream(server.getOutputStream());
-                out.writeUTF(gson.toJson(respData));
+                out.writeUTF(JsonUtil.objToJson(respData));
 
                 // 关闭连接
                 server.close();

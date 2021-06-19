@@ -1,18 +1,16 @@
 package com.py.remote;
 
-import com.google.gson.Gson;
 import com.py.protocol.InfProtocol;
+import com.py.refl.ReflSuport;
+import com.py.support.ParamSupport;
+import com.py.util.JsonUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.HashMap;
 import java.util.Map;
 
 public class RemoteInvokeHandler implements InvocationHandler {
-
-    // 后续改造，把通用的写成工具类
-    private Gson gson = new Gson();
 
     private String className;
 
@@ -29,45 +27,36 @@ public class RemoteInvokeHandler implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
+        // 过滤出Object里面的方法
         if ("toString".equals(method.getName())) {
             // 一些不需要代理的方法
             return method.invoke(new Object(), args);
         }
 
+        // 协议对象
         InfProtocol infProtocol = new InfProtocol();
         infProtocol.setInf(className);
         infProtocol.setMethod(method.getName());
 
+        // 把java中基础类型转化
         Parameter[] parameters = method.getParameters();
-        String[] types = new String[parameters.length];
-        for (int i = 0; i < parameters.length; i++) {
-            Class<?> type = parameters[i].getType();
-            switch (type.getName()) {
-                case "java.lang.String":
-                    types[i] = "string";
-                    break;
-                case "java.lang.Integer":
-                    types[i] = "int";
-            }
-        }
+        String[] types = ReflSuport.typeTransform(parameters);
         infProtocol.setTypes(types);
 
-        Map<String, Object> params = new HashMap<>();
-        for (int i = 0; i < args.length; i++) {
-            String argName = parameters[i].getName();
-            params.put(argName, args[i]);
-        }
-
-
+        // 参数转换
+        Map<String, Object> params = ParamSupport.paramTransform(parameters, args);
         infProtocol.setParams(params);
 
         // socket调用
         RpcTransport rpcTransport = new RpcTransport(host, port);
+
+        // 结果类型转换，返回
         Object result = rpcTransport.sendRequest(infProtocol);
         Class<?> returnType = method.getReturnType();
         if ("java.lang.String".equals(result.getClass().getName())) {
-            return gson.fromJson(result.toString(), returnType);
+            return JsonUtil.jsonToObj(result.toString(), returnType);
         }
-        return gson.fromJson(gson.toJson(result), returnType);
+        return JsonUtil.jsonToObj(JsonUtil.objToJson(result), returnType);
     }
+
 }

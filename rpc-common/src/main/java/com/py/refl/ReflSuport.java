@@ -1,4 +1,4 @@
-package com.py.suport.refl;
+package com.py.refl;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -59,14 +59,24 @@ public class ReflSuport {
             Parameter parameter = parameters[i];
             String name = parameter.getName();
             Object value = params.get(name);
-            switch (parameter.getType().getName()) {
-                case "java.lang.String":
-                    break;
-                case "java.lang.Integer":
-                    paramsObj[i] = new Double(value.toString()).intValue();
-                    break;
-            }
+            paramsObj[i] = value;
         }
         return paramsObj;
     }
+
+    public static String[] typeTransform(Parameter[] parameters) {
+        String[] types = new String[parameters.length];
+        for (int i = 0; i < parameters.length; i++) {
+            Class<?> type = parameters[i].getType();
+            switch (type.getName()) {
+                case "java.lang.String":
+                    types[i] = "string";
+                    break;
+                case "java.lang.Integer":
+                    types[i] = "int";
+            }
+        }
+        return types;
+    }
+
 }
