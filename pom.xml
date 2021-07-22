@@ -14,6 +14,7 @@
         <module>rpc-common</module>
         <module>rpc-inf</module>
         <module>rpc-registry</module>
+        <module>rmi-demo</module>
     </modules>
 
     <properties>
