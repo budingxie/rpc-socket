@@ -2,8 +2,6 @@ package com.py.server;
 
 import com.py.RelaxHeartMonitorService;
 import com.py.common.Constant;
-import com.sun.org.slf4j.internal.Logger;
-import com.sun.org.slf4j.internal.LoggerFactory;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
